@@ -1,3 +1,59 @@
 run:
+  tests: false
   skip-dirs:
     - pkg/terraform
+
+linters:
+  disable-all: true
+  enable:
+    - deadcode
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+    - asciicheck
+    - cyclop
+    - dogsled
+    - dupl
+    - durationcheck
+    - exportloopref
+    - forcetypeassert
+    - funlen
+    - gci
+    - gochecknoglobals
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - godox
+    - gofmt
+    - gomnd
+    - gosec
+    - ifshort
+    - importas
+    - makezero
+    - misspell
+    - nestif
+    - nilerr
+    - nlreturn
+    - nolintlint
+    - prealloc
+    - predeclared
+    - exportloopref
+    - tagliatelle
+    - thelper
+    - unconvert
+    - unparam
+    - wastedassign
+    - wrapcheck
+    - wsl
+
+linters-settings:
+  gci:
+    local-prefixes: github.com/hexbee-net/horus
