@@ -13,3 +13,7 @@
 
 # Dependency directories
 vendor/
+
+# Test data
+testData/.terraform
+testData/.terraform.lock.hcl
