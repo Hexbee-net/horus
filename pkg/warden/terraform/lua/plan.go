@@ -31,10 +31,10 @@ package lua
 import (
 	"fmt"
 
-	wlua "github.com/hexbee-net/horus/pkg/warden/lua"
 	lua "github.com/yuin/gopher-lua"
 	"golang.org/x/xerrors"
 
+	wlua "github.com/hexbee-net/horus/pkg/warden/lua"
 	"github.com/hexbee-net/horus/pkg/warden/terraform"
 )
 
@@ -45,34 +45,34 @@ const (
 )
 
 // RegisterPlanType registers the plan type inside the Lua state.
-func RegisterPlanType(L *lua.LState) {
+func RegisterPlanType(ls *lua.LState) {
 	var methods = map[string]lua.LGFunction{
 		luaFunctionPlanFindResource: planFindResource,
 	}
 
-	mt := L.NewTypeMetatable(luaPlanTypeName)
-	L.SetGlobal(luaPlanTypeName, mt)
+	mt := ls.NewTypeMetatable(luaPlanTypeName)
+	ls.SetGlobal(luaPlanTypeName, mt)
 
 	// methods
-	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), methods))
+	ls.SetField(mt, "__index", ls.SetFuncs(ls.NewTable(), methods))
 }
 
-func LPlan(L *lua.LState, plan *terraform.Plan) *lua.LUserData {
-	ud := L.NewUserData()
+func LPlan(ls *lua.LState, plan *terraform.Plan) *lua.LUserData {
+	ud := ls.NewUserData()
 	ud.Value = plan
-	L.SetMetatable(ud, L.GetTypeMetatable(luaPlanTypeName))
+	ls.SetMetatable(ud, ls.GetTypeMetatable(luaPlanTypeName))
 
 	return ud
 }
 
 // CheckPlan checks whether the first lua argument is a *LUserData with *Plan and returns this *Plan.
-func CheckPlan(L *lua.LState) (*terraform.Plan, error) {
-	ud := L.CheckUserData(1)
+func CheckPlan(ls *lua.LState) (*terraform.Plan, error) {
+	ud := ls.CheckUserData(1)
 	if v, ok := ud.Value.(*terraform.Plan); ok {
 		return v, nil
 	}
 
-	L.ArgError(1, "plan expected")
+	ls.ArgError(1, "plan expected")
 
 	return nil, xerrors.New("not a plan variable")
 }
@@ -80,33 +80,39 @@ func CheckPlan(L *lua.LState) (*terraform.Plan, error) {
 // -----------------------------------------------------------------------------
 // Lua Functions
 
-func planFindResource(L *lua.LState) int {
+func planFindResource(ls *lua.LState) int {
+	const (
+		ArgCount           = 3
+		ArgPosResourceType = 2
+		ArgPosResourceName = 3
+	)
+
 	// We use a flag instead of returning immediately to gather as much errors
 	// in one run to spare the user from needing to run the script multiple
 	// times before catching all the possible errors in the script.
 	invalidCall := false
 
-	p, err := CheckPlan(L)
+	p, err := CheckPlan(ls)
 	if err != nil {
 		invalidCall = true
 	}
 
-	if top := L.GetTop(); top != 3 {
-		if top < 3 {
-			L.ArgError(1, fmt.Sprintf("not enough arguments in call to '%s'", luaFunctionPlanFindResource))
+	if top := ls.GetTop(); top != ArgCount {
+		if top < ArgCount {
+			ls.ArgError(1, fmt.Sprintf("not enough arguments in call to '%s'", luaFunctionPlanFindResource))
 		} else {
-			L.ArgError(1, fmt.Sprintf("too many arguments in call to '%s'", luaFunctionPlanFindResource))
+			ls.ArgError(1, fmt.Sprintf("too many arguments in call to '%s'", luaFunctionPlanFindResource))
 		}
 
 		invalidCall = true
 	}
 
-	resourceType, err := wlua.CheckString(L, 2)
+	resourceType, err := wlua.CheckString(ls, ArgPosResourceType)
 	if err != nil {
 		invalidCall = true
 	}
 
-	resourceName, err := wlua.CheckString(L, 3)
+	resourceName, err := wlua.CheckString(ls, ArgPosResourceName)
 	if err != nil {
 		invalidCall = true
 	}
@@ -116,9 +122,15 @@ func planFindResource(L *lua.LState) int {
 	}
 
 	resource, err := p.FindResource(resourceType, resourceName)
+	if err != nil {
+		ls.RaiseError("failed to search for resource %s.%s in plan file", resourceType, resourceName)
+
+		return 0
+	}
 
 	if resource != nil {
-		L.Push(lua.LString("resource"))
+		ls.Push(lua.LString("resource"))
+
 		return 1
 	}
 

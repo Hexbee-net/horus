@@ -2,8 +2,6 @@ package warden
 
 import (
 	"fmt"
-	"github.com/hexbee-net/horus/pkg/warden/terraform"
-	tflua "github.com/hexbee-net/horus/pkg/warden/terraform/lua"
 
 	"github.com/imdario/mergo"
 	"github.com/spf13/afero"
@@ -11,6 +9,8 @@ import (
 	"golang.org/x/xerrors"
 
 	wlua "github.com/hexbee-net/horus/pkg/warden/lua"
+	"github.com/hexbee-net/horus/pkg/warden/terraform"
+	tflua "github.com/hexbee-net/horus/pkg/warden/terraform/lua"
 )
 
 type Warden struct {
@@ -41,7 +41,7 @@ func New(opts ...*Options) (*Warden, error) {
 	w.lState.PreloadModules(opt.Modules)
 
 	if err := w.lState.PreloadUserModule(opt.UserModules); err != nil {
-		return nil, err
+		return nil, err //nolint:wrapcheck // this error actually comes from one of our own packages.
 	}
 
 	fn, err := w.lState.LoadString(w.options.Script)
@@ -82,8 +82,8 @@ func (w *Warden) Close() {
 	}
 }
 
-func checkResult(L *wlua.LState) (issues []string) {
-	ret := L.Get(-1)
+func checkResult(ls *wlua.LState) (issues []string) {
+	ret := ls.Get(-1)
 
 	if ret == lua.LNil || ret == lua.LTrue {
 		return nil

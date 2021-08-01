@@ -24,16 +24,6 @@ import (
 
 type ResourceChange struct {
 	tfResource *plans.ResourceInstanceChange
-
-	//Address AbsResourceInstance
-	//ModuleAddress string
-	//Type         string
-	//Name         string
-	//Mode         string
-	//Index        string
-	//ProviderName string
-	//Deposed      string
-	//Change        string
 }
 
 // -----------------------------------------------------------------------------
@@ -54,7 +44,7 @@ const (
 )
 
 // RegisterResourceChangeType registers the ResourceChange type inside the Lua state.
-func RegisterResourceChangeType(L *lua.LState) {
+func RegisterResourceChangeType(ls *lua.LState) {
 	var methods = map[string]lua.LGFunction{
 		luaFunctionResourceChangeGetAddress:       resourceChangeGetAddress,
 		luaFunctionResourceChangeGetModuleAddress: resourceChangeGetModuleAddress,
@@ -67,22 +57,22 @@ func RegisterResourceChangeType(L *lua.LState) {
 		luaFunctionResourceChangeGetChange:        resourceChangeGetChange,
 	}
 
-	mt := L.NewTypeMetatable(luaResourceChangeTypeName)
-	L.SetGlobal(luaResourceChangeTypeName, mt)
+	mt := ls.NewTypeMetatable(luaResourceChangeTypeName)
+	ls.SetGlobal(luaResourceChangeTypeName, mt)
 
 	// methods
-	L.SetField(mt, "__index", L.SetFuncs(L.NewTable(), methods))
+	ls.SetField(mt, "__index", ls.SetFuncs(ls.NewTable(), methods))
 }
 
 // CheckResourceChange checks whether the first lua argument is a *LUserData
 // with *ResourceChange and returns this *ResourceChange.
-func CheckResourceChange(L *lua.LState) (*ResourceChange, error) {
-	ud := L.CheckUserData(1)
+func CheckResourceChange(ls *lua.LState) (*ResourceChange, error) {
+	ud := ls.CheckUserData(1)
 	if v, ok := ud.Value.(*ResourceChange); ok {
 		return v, nil
 	}
 
-	L.ArgError(1, fmt.Sprintf("%s expected", luaResourceChangeTypeName))
+	ls.ArgError(1, fmt.Sprintf("%s expected", luaResourceChangeTypeName))
 
 	return nil, ErrInvalidType
 }
@@ -90,50 +80,52 @@ func CheckResourceChange(L *lua.LState) (*ResourceChange, error) {
 // -----------------------------------------------------------------------------
 // Lua Functions
 
-func resourceChangeGetAddress(L *lua.LState) int {
+func resourceChangeGetAddress(ls *lua.LState) int {
 	panic("not implemented")
 }
 
-func resourceChangeGetModuleAddress(L *lua.LState) int {
+func resourceChangeGetModuleAddress(ls *lua.LState) int {
 	panic("not implemented")
 }
 
-func resourceChangeGetType(L *lua.LState) int {
-	r, err := CheckResourceChange(L)
+func resourceChangeGetType(ls *lua.LState) int {
+	r, err := CheckResourceChange(ls)
 	if err != nil {
 		return 0
 	}
 
-	L.Push(lua.LString(r.tfResource.Addr.Resource.Resource.Type))
+	ls.Push(lua.LString(r.tfResource.Addr.Resource.Resource.Type))
+
 	return 1
 }
 
-func resourceChangeGetName(L *lua.LState) int {
-	r, err := CheckResourceChange(L)
+func resourceChangeGetName(ls *lua.LState) int {
+	r, err := CheckResourceChange(ls)
 	if err != nil {
 		return 0
 	}
 
-	L.Push(lua.LString(r.tfResource.Addr.Resource.Resource.Name))
+	ls.Push(lua.LString(r.tfResource.Addr.Resource.Resource.Name))
+
 	return 1
 }
 
-func resourceChangeGetMode(L *lua.LState) int {
+func resourceChangeGetMode(ls *lua.LState) int {
 	panic("not implemented")
 }
 
-func resourceChangeGetIndex(L *lua.LState) int {
+func resourceChangeGetIndex(ls *lua.LState) int {
 	panic("not implemented")
 }
 
-func resourceChangeGetProviderName(L *lua.LState) int {
+func resourceChangeGetProviderName(ls *lua.LState) int {
 	panic("not implemented")
 }
 
-func resourceChangeGetDeposed(L *lua.LState) int {
+func resourceChangeGetDeposed(ls *lua.LState) int {
 	panic("not implemented")
 }
 
-func resourceChangeGetChange(L *lua.LState) int {
+func resourceChangeGetChange(ls *lua.LState) int {
 	panic("not implemented")
 }

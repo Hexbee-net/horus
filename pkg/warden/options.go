@@ -36,14 +36,14 @@ type Options struct {
 
 func DefaultPreloadModules() []wlua.Module {
 	return []wlua.Module{
-		{"crypto", luaCrypto.Loader},     // calculate md5, sha256 hash for string
-		{"humanize", luaHumanize.Loader}, // humanize times and sizes
-		{"inspect", luaInspect.Loader},   // transforms any Lua value into a human-readable representation
-		{"json", luaJson.Loader},         // json encoder/decoder
-		{"regexp", luaRegexp.Loader},     // regular expressions
-		{"tac", luaTac.Loader},           // line-by-line scanner
-		{"time", luaTime.Loader},         // time related functions
-		{"yaml", luaYaml.Loader},         // yaml encoder/decoder
+		{Name: "crypto", Function: luaCrypto.Loader},     // calculate md5, sha256 hash for string
+		{Name: "humanize", Function: luaHumanize.Loader}, // humanize times and sizes
+		{Name: "inspect", Function: luaInspect.Loader},   // transforms any Lua value into a human-readable representation
+		{Name: "json", Function: luaJson.Loader},         // json encoder/decoder
+		{Name: "regexp", Function: luaRegexp.Loader},     // regular expressions
+		{Name: "tac", Function: luaTac.Loader},           // line-by-line scanner
+		{Name: "time", Function: luaTime.Loader},         // time related functions
+		{Name: "yaml", Function: luaYaml.Loader},         // yaml encoder/decoder
 	}
 }
 

@@ -29,8 +29,8 @@ func NewState(opts ...lua.Options) *LState {
 	return &LState{lua.NewState(opts...)}
 }
 
-func AsLState(L *lua.LState) *LState {
-	return &LState{L}
+func AsLState(ls *lua.LState) *LState {
+	return &LState{ls}
 }
 
 // OpenModules loads the specified modules in the current LState.
@@ -91,12 +91,12 @@ func (ls *LState) CheckType(n int, typ lua.LValueType) error {
 	return CheckType(ls.LState, n, typ)
 }
 
-func CheckType(L *lua.LState, n int, typ lua.LValueType) error {
-	v := L.Get(n)
+func CheckType(ls *lua.LState, n int, typ lua.LValueType) error {
+	v := ls.Get(n)
 	if v.Type() != typ {
-		L.TypeError(n, typ)
+		ls.TypeError(n, typ)
 
-		return xerrors.Errorf("invalid argument #%v (%v expected, got %v)", n, typ.String(), L.Get(n).Type().String())
+		return xerrors.Errorf("invalid argument #%v (%v expected, got %v)", n, typ.String(), ls.Get(n).Type().String())
 	}
 
 	return nil
@@ -106,15 +106,15 @@ func (ls *LState) CheckString(n int) (string, error) {
 	return CheckString(ls.LState, n)
 }
 
-func CheckString(L *lua.LState, n int) (string, error) {
-	v := L.Get(n)
+func CheckString(ls *lua.LState, n int) (string, error) {
+	v := ls.Get(n)
 	if lv, ok := v.(lua.LString); ok {
 		return string(lv), nil
 	} else if lua.LVCanConvToString(v) {
-		return L.ToString(n), nil
+		return ls.ToString(n), nil
 	}
 
-	L.TypeError(n, lua.LTString)
+	ls.TypeError(n, lua.LTString)
 
-	return "", xerrors.Errorf("invalid argument #%v (%v expected, got %v)", n, lua.LTString.String(), L.Get(n).Type().String())
+	return "", xerrors.Errorf("invalid argument #%v (%v expected, got %v)", n, lua.LTString.String(), ls.Get(n).Type().String())
 }

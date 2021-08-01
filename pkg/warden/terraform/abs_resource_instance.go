@@ -14,10 +14,6 @@
 
 package terraform
 
-import (
-	"github.com/hexbee-net/horus/pkg/terraform/addrs"
-)
-
 type AbsResourceInstance struct {
-	tfAddr *addrs.AbsResourceInstance
+	// tfAddr *addrs.AbsResourceInstance
 }

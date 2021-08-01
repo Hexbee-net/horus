@@ -27,18 +27,7 @@ func (p *Plan) FindResource(resourceType string, resourceName string) ([]*Resour
 
 	for _, r := range p.Changes.Resources {
 		if r.Addr.Resource.Resource.Type == resourceType && r.Addr.Resource.Resource.Name == resourceName {
-			rc := &ResourceChange{
-				//Address: AbsResourceInstance{
-				//	tfAddr: &r.Addr,
-				//},
-				////ModuleAddress: "foo",
-				////Type:         r.Addr.Resource.Resource.Type,
-				////Name:         r.Addr.Resource.Resource.Name,
-				//Mode:         "foo",
-				//Index:        "foo",
-				//ProviderName: "foo",
-				//Deposed:      "foo",
-			}
+			rc := &ResourceChange{}
 			resources = append(resources, rc)
 		}
 	}

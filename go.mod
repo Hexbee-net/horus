@@ -7,7 +7,6 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hexbee-net/horus/pkg/terraform v1.0.3
 	github.com/imdario/mergo v0.3.12
-	github.com/pkg/sftp v1.10.1 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.5 // indirect

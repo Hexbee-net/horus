@@ -15,8 +15,6 @@
 package lua
 
 import (
-	"reflect"
-
 	lua "github.com/yuin/gopher-lua"
 	luar "layeh.com/gopher-luar"
 
@@ -30,8 +28,8 @@ const (
 	configFieldName    = "config"
 )
 
-var exports = map[string]lua.LGFunction{
-	//"filter": filter,
+var exports = map[string]lua.LGFunction{ //nolint:gochecknoglobals // wip
+	// "filter": filter,
 }
 
 func GetLoader(planFile *terraform.PlanFile) lua.LGFunction {
@@ -53,19 +51,4 @@ func GetLoader(planFile *terraform.PlanFile) lua.LGFunction {
 
 		return 1
 	}
-}
-
-func newUserDate(L *lua.LState, value interface{}) lua.LValue {
-	if value == nil {
-		return lua.LNil
-	}
-	if lval, ok := value.(lua.LValue); ok {
-		return lval
-	}
-
-	val := reflect.ValueOf(value)
-
-	ud := L.NewUserData()
-	ud.Value = val.Interface()
-	return ud
 }
